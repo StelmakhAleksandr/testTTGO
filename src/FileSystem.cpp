@@ -18,7 +18,6 @@ void FileSystem::init() {
     drv_.dir_close_cb = FileSystem::dirClose;   
     lv_fs_drv_register(&drv_);     
 
-    showDir(":/");
     // openFile(":/test.txt");
 }
 
