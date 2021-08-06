@@ -6,14 +6,22 @@ void App::setup() {
     lv_log_register_print_cb(App::lvglPrint);
     gui_.init();
     fileSystem_.init();    
-
     bluetoothController_.init();
+    mainController_.init();
 
-    ITask::createTask("gui", &gui_);
-    std::function<void ()> func = std::bind(&App::test, this); 
-    Slot::add(&bluetoothController_.onTestChanged, &func);
-
+    initSignals();
     bluetoothController_.run();
+    gui_.runTask();
+
+    TestA *testA = new TestA(&a_);
+    TestB *testB = new TestB(&a_);
+
+    // ITask::createTask("testA", testA);
+    // ITask::createTask("testB", testB);
+
+    a_.a = 145;
+
+    mainController_.setText("pzdc");
 }
 
 void App::loop() {
@@ -23,7 +31,17 @@ void App::lvglPrint(const char *dsc) {
     Serial.printf("%s \r\n", dsc);
 }
 
-void App::test() {
-    Serial.println("APP::test");
-    
+void App::initSignals() {
+    using std::placeholders::_1;
+    using std::placeholders::_2;
+    // Slot::add(&bluetoothController_.onConnectionChanged, (std::function<void (bool)>)std::bind(&App::blt, this, _1));
+    bluetoothController_.onConnectionChanged = [=](bool connected) {
+        if(connected) {
+            mainController_.run();
+        } else {
+            bluetoothController_.run();
+        }
+    };
+
+    bluetoothController_.onReceive = std::bind(&MainController::setText, mainController_, _1);
 }

@@ -14,10 +14,7 @@ void BluetoothController::init() {
 }
 
 void BluetoothController::run() {
-    mainWindow_.load();
-    if(onTestChanged) {
-        onTestChanged();
-    }
+    window_.load();
 }
 
 void BluetoothController::callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param) {
@@ -31,6 +28,13 @@ void BluetoothController::callbackInner(esp_spp_cb_event_t event, esp_spp_cb_par
     } else if(event == ESP_SPP_CLOSE_EVT) {
         Serial.println("Client disconnected");
         setConnection(false);
+    } else if(event == ESP_SPP_DATA_IND_EVT) {
+        std::string received;
+        while(serial_.available()) {
+            received.push_back(serial_.read());
+        }
+        if(onReceive)
+            onReceive(received);
     }
 }
 

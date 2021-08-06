@@ -9,4 +9,5 @@ void ITask::createTaskInner(void *instance) {
     if(task) {
         task->task();
     }
+    vTaskDelete(NULL);
 }

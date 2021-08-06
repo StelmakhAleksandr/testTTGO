@@ -1,10 +1,10 @@
 #pragma once
 
-#include "MainWindow.h"
+#include "BluetoothWindow.h"
+#include "ITask.h"
 #include <BluetoothSerial.h>
 #include <string>
 #include <functional>
-#include "common.h"
 
 class BluetoothController {
 public:
@@ -12,9 +12,9 @@ public:
     void run();
     void sendData(uint8_t* buf, int size);
     std::function<void (bool)> onConnectionChanged;
-    std::function<void ()> onTestChanged;
+    std::function<void (std::string)> onReceive;
 private:
-    MainWindow mainWindow_;
+    BluetoothWindow window_;
     BluetoothSerial serial_;
     bool connected_;
     static std::function<void (esp_spp_cb_event_t, esp_spp_cb_param_t *)> onCallback;
